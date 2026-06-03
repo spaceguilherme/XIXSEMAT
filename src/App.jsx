@@ -3,7 +3,7 @@ import bannerImg from './assets/new-banner.png';
 
 function App() {
   // Define 'Inicio' como a aba padrão quando o site carrega
-  const [abaAtiva, setAbaAtiva] = useState('Inicio');
+  const [abaAtiva, setAbaAtiva] = useState('INÍCIO');
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       
