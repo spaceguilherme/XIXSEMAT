@@ -1,32 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import bannerImg from './assets/new-banner.png';
 import logoXVII from './assets/logoxvii.png';
 import logoXVIII from './assets/logoxviii.png';
 import logoXIX from './assets/logoxix.png';
 
 function App() {
-  // Define 'Inicio' como a aba padrão quando o site carrega
-  const [abaAtiva, setAbaAtiva] = useState('INÍCIO');
+  // Define 'Inicio' como a aba padrão ou busca a última salva no cache
+  const [abaAtiva, setAbaAtiva] = useState(() => {
+    return localStorage.getItem('sematAbaAtiva') || 'INÍCIO';
+  });
+
+  // Salva no navegador sempre que a aba mudar (resolve o erro de atualizar a página)
+  useEffect(() => {
+    localStorage.setItem('sematAbaAtiva', abaAtiva);
+  }, [abaAtiva]);
+
+  const [menuAberto, setMenuAberto] = useState(false);
+  const abas = ['INÍCIO', 'PROGRAMAÇÃO', 'EDITAL', 'SUBMISSÕES', 'CERTIFICADOS'];
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       
       {/* 1. Navbar - Dinâmica */}
+      {/* 1. Navbar - Dinâmica e Responsiva */}
       <nav className="bg-semat-dark p-4 shadow-md sticky top-0 z-50 border-b-2 border-semat-sec2">
-        <div className="max-w-6xl mx-auto flex justify-center space-x-8 text-sm font-semibold tracking-wider uppercase">
-          {['INÍCIO', 'PROGRAMAÇÃO', 'EDITAL', 'SUBMISSÕES', 'CERTIFICADOS'].map((aba) => (
-            <button
-              key={aba}
-              onClick={() => setAbaAtiva(aba)}
-              className={`transition-colors duration-200 pb-1 ${
-                abaAtiva === aba 
-                  ? 'text-white border-b-2 border-semat-light' // Aba ativa: branca com sublinhado laranja
-                  : 'text-semat-light hover:text-white'        // Aba inativa: laranja, fica branca no hover
-              }`}
-            >
-              {aba}
-            </button>
-          ))}
+        <div className="max-w-6xl mx-auto flex justify-between md:justify-center items-center">
+          
+          {/* Título Mobile (Visível apenas em telas pequenas) */}
+          <div className="md:hidden text-white font-bold tracking-widest">
+            SEMAT UESC
+          </div>
+
+          {/* Botão Hambúrguer Mobile */}
+          <button 
+            onClick={() => setMenuAberto(!menuAberto)}
+            className="md:hidden text-semat-sec1 hover:text-white focus:outline-none transition-colors"
+            aria-label="Alternar menu"
+          >
+            {menuAberto ? (
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            ) : (
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            )}
+          </button>
+
+          {/* Menu Desktop (Escondido no Mobile) */}
+          <div className="hidden md:flex space-x-8 text-sm font-semibold tracking-wider uppercase">
+            {abas.map((aba) => (
+              <button
+                key={aba}
+                onClick={() => setAbaAtiva(aba)}
+                className={`transition-colors duration-200 pb-1 ${
+                  abaAtiva === aba 
+                    ? 'text-white border-b-2 border-semat-light' 
+                    : 'text-semat-light hover:text-white'        
+                }`}
+              >
+                {aba}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Menu Dropdown Mobile */}
+        {menuAberto && (
+          <div className="md:hidden mt-4 pt-4 border-t border-semat-blue/50 flex flex-col space-y-4 text-sm font-semibold tracking-wider uppercase animate-fade-in">
+            {abas.map((aba) => (
+              <button
+                key={aba}
+                onClick={() => {
+                  setAbaAtiva(aba);
+                  setMenuAberto(false); // Fecha o menu automaticamente ao clicar
+                }}
+                className={`text-left px-2 py-1 transition-colors duration-200 ${
+                  abaAtiva === aba 
+                    ? 'text-white border-l-4 border-semat-sec2 pl-3' 
+                    : 'text-semat-light hover:text-white'        
+                }`}
+              >
+                {aba}
+              </button>
+            ))}
+          </div>
+        )}
       </nav>
 
       {/* 2. Header / Hero Banner (Apenas a Imagem) */}
